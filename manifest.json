@@ -1,0 +1,18 @@
+{
+  "name": "Variable Assist",
+  "id": "1454320471251909627",
+  "api": "1.0.0",
+  "main": "./dist/logic/index.js",
+  "capabilities": [],
+  "enableProposedApi": false,
+  "documentAccess": "dynamic-page",
+  "editorType": [
+    "figma"
+  ],
+  "ui": "./dist/html/index.html",
+  "networkAccess": {
+    "allowedDomains": [
+      "none"
+    ]
+  }
+}
