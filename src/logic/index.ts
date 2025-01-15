@@ -19,19 +19,20 @@ figma.ui.onmessage = (message: UIMessage) => {
           ])),
         ].flat();
         const tmpMap = [...createTargetsMap(targets).entries()];
-        console.log('tmpMap', tmpMap);
         const map: SerializableTargetMap = Object.fromEntries(
-          tmpMap.map(([id, item]) => [id, {
-            target: {
-              id: item.target.id,
-              name: item.target.name,
-              type: isVariable(item.target) ? 'VARIABLE' : item.target.type,
-            },
-            children: item.children,
-            parent: item.parent,
-          } satisfies SerializableTargetItem])
+          tmpMap.map(([id, item]) => [
+            id,
+            {
+              target: {
+                id: item.target.id,
+                name: item.target.name,
+                type: isVariable(item.target) ? 'VARIABLE' : item.target.type,
+              },
+              children: item.children,
+              parent: item.parent,
+            } satisfies SerializableTargetItem,
+          ]),
         );
-        console.log('prepost', map);
         postLogicMessage({ type: 'createTargetMap', map });
       }
     }

@@ -1,4 +1,5 @@
 import { defineConfig, UserConfig } from 'vite';
+import path from 'path';
 
 type Input = NonNullable<NonNullable<NonNullable<UserConfig['build']>['rollupOptions']>['input']>;
 
@@ -20,5 +21,11 @@ export default defineConfig({
         inlineDynamicImports: true,
       },
     },
+  },
+  resolve: {
+    alias: [{
+      find: /^@emotion\/css$/,
+      replacement: path.resolve(__dirname, 'src/lib/myEmotion.ts'),
+    }],
   },
 });

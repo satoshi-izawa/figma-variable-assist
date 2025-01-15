@@ -1,9 +1,6 @@
 type Target = Variable | EffectStyle | GridStyle | PaintStyle | TextStyle;
 
-type TargetMap = Map<
-  Target['id'],
-  TargetTreeItem
->;
+type TargetMap = Map<Target['id'], TargetTreeItem>;
 
 interface TargetTreeItem {
   target: Target;
@@ -23,7 +20,4 @@ interface SerializableTargetItem {
   parent: Target['id'][];
 }
 
-type SerializableTargetMap = Record<
-  Target['id'],
-  SerializableTargetItem
->;
+type SerializableTargetMap = Record<Target['id'], SerializableTargetItem>;

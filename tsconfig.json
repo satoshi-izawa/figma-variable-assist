@@ -16,5 +16,8 @@
   "exclude": ["./node_modules"],
   "ts-node": {
     "esm": true,
-  }
+  },
+  "plugins": [{
+    "name": "eslint-plugin-import-access"
+  }],
 }

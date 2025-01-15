@@ -13,6 +13,7 @@ import prettier from "eslint-config-prettier";
 import react from 'eslint-plugin-react';
 // @ts-ignore
 import reactHooks from 'eslint-plugin-react-hooks';
+import importAccess from 'eslint-plugin-import-access/flat-config';
 
 const compat = new FlatCompat();
 
@@ -27,8 +28,6 @@ export default tseslint.config([
     'plugin:react-hooks/recommended',
   ),
   {
-    files: ["**/*.*ts"],
-    ignores: ["/node_modules"],
     languageOptions: {
       parserOptions: {
         projectService: true,
@@ -37,6 +36,7 @@ export default tseslint.config([
     },
     plugins: {
       'react-hooks': reactHooks,
+      'import-access': importAccess,
     },
     settings: {
       react: {
@@ -45,6 +45,7 @@ export default tseslint.config([
     }
   }, {
     rules: {
+      ...reactHooks.configs.recommended.rules,
       "@typescript-eslint/no-unused-vars": [
         "error",
         {
@@ -53,7 +54,11 @@ export default tseslint.config([
           "caughtErrorsIgnorePattern": "^_",
           "destructuredArrayIgnorePattern": "^_",
         }
-      ]
+      ],
+      "react/react-in-jsx-scope": ['off'],
+      "import-access/jsdoc": ["error", {
+        indexLoophole: true,
+      }],
     }
   }
 ]);

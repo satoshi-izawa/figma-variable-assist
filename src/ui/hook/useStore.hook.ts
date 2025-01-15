@@ -1,5 +1,6 @@
-import { createContext, useContext } from "react";
-import { useTargetTreeReducer } from "../reducer/targetTree.reducer";
+import { createContext, useContext } from 'react';
+// eslint-disable-next-line import-access/jsdoc
+import { useTargetTreeReducer } from '../reducer/targetTree.reducer';
 
 interface Store {
   targetTree: ReturnType<typeof useTargetTreeReducer>;

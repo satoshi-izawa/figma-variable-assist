@@ -2,6 +2,7 @@ import { assertDefined } from '../util/assertDefined';
 import { isDefined } from '../util/isDefined';
 import { isVariable } from '../util/isVariable';
 
+/** @package */
 export const createTargetsMap = (targets: Target[]) => {
   const map: TargetMap = new Map(
     targets.map(t => [t.id, { target: t, children: [], parent: [] }]),
