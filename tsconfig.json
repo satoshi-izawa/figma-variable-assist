@@ -5,7 +5,6 @@
     "strict": true,
     "module": "NodeNext",
     "moduleResolution": "nodenext",
-    "skipLibCheck": true,
     "typeRoots": [
       "./node_modules/@types",
       "./node_modules/@figma"

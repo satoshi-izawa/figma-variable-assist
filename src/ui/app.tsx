@@ -1,14 +1,8 @@
-import { useEffect, useRef } from "react";
-import { assertDefined } from "../util/assertDefined";
+import { StoreContextProvider, useStoreInit } from "./hook/useStore.hook";
+import { Main } from "./main";
 
 export const App = () => {
-  const ref = useRef<HTMLButtonElement>(null);
-  useEffect(() => {
-    assertDefined(ref.current);
-    ref.current.addEventListener('click', () => {
-      console.log('click');
-      parent.postMessage({ pluginMessage: { type: 'test' } }, '*');
-    });
-  }, []);
-  return <button ref={ref}>test</button>;
+  return <StoreContextProvider value={useStoreInit()}>
+    <Main />
+  </StoreContextProvider >
 };

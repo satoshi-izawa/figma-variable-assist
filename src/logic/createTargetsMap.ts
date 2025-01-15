@@ -1,19 +1,12 @@
 import { assertDefined } from '../util/assertDefined';
 import { isDefined } from '../util/isDefined';
-
-type Target = Variable | EffectStyle | GridStyle | PaintStyle | TextStyle;
-type TargetMap = Map<
-  Target['id'],
-  { target: Target; children: Target['id'][]; parent: Target['id'][] }
->;
+import { isVariable } from '../util/isVariable';
 
 export const createTargetsMap = (targets: Target[]) => {
   const map: TargetMap = new Map(
     targets.map(t => [t.id, { target: t, children: [], parent: [] }]),
   );
   targets.forEach(target => {
-    const current = map.get(target.id);
-    assertDefined(current);
     if (isVariable(target)) {
       [...Object.values(target.valuesByMode)].forEach(t => {
         if (isAlias(t)) {
@@ -49,7 +42,6 @@ export const createTargetsMap = (targets: Target[]) => {
       });
     }
   });
-  console.log([...map.entries()]);
   return map;
 };
 
@@ -68,8 +60,6 @@ const register = (
 
 const isAlias = (variable: VariableValue) =>
   typeof variable === 'object' && 'id' in variable;
-const isVariable: (target: Target) => target is Variable = target =>
-  'valuesByMode' in target;
 const isEffectStyle = (target: Target) =>
   'type' in target && target.type === 'EFFECT';
 const isGridStyle = (target: Target) =>
