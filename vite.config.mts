@@ -1,17 +1,24 @@
-import type { UserConfig } from 'vite';
+import { defineConfig, UserConfig } from 'vite';
 
-export default {
+type Input = NonNullable<NonNullable<NonNullable<UserConfig['build']>['rollupOptions']>['input']>;
+
+const input: Input = process.env.TYPE === 'ui' ? {
+  ui: './src/ui/index.tsx',
+} : {
+  logic: './src/logic/index.ts',
+}
+
+export default defineConfig({
   root: '.',
   build: {
     outDir: './dist',
+    emptyOutDir: false,
     rollupOptions: {
-      input: {
-        ui: './src/ui/index.ts',
-        logic: './src/logic/index.ts',
-      },
+      input,
       output: {
         entryFileNames: '[name]/index.js',
+        inlineDynamicImports: true,
       },
     },
   },
-} satisfies UserConfig;
+});

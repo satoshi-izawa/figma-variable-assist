@@ -11,8 +11,9 @@
       "./node_modules/@figma"
     ],
     "allowSyntheticDefaultImports": true,
+    "jsx": "react-jsx",
   },
-  "include": ["src/**/*.ts", "**/*.mts"],
+  "include": ["src/**/*.ts", "src/**/*.tsx", "**/*.mts"],
   "exclude": ["./node_modules"],
   "ts-node": {
     "esm": true,
