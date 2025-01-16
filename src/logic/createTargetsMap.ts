@@ -1,6 +1,5 @@
-import { assertDefined } from '../util/assertDefined';
 import { isDefined } from '../util/isDefined';
-import { isVariable } from '../util/isVariable';
+import { isStyle, isVariable } from '../util/nodeTypeGuard';
 
 /** @package */
 export const createTargetsMap = (targets: Target[]) => {
@@ -14,37 +13,41 @@ export const createTargetsMap = (targets: Target[]) => {
           register(map, target.id, t.id);
         }
       });
-    } else if (isEffectStyle(target)) {
-      isDefined([target.boundVariables?.effects].flat()).forEach(t => {
+    } else {
+      flatBoundVariables(target).forEach(t => {
         register(map, target.id, t.id);
       });
-    } else if (isGridStyle(target)) {
-      isDefined([target.boundVariables?.layoutGrids].flat()).forEach(t => {
-        register(map, target.id, t.id);
-      });
-    } else if (isPaintStyle(target)) {
-      isDefined([target.boundVariables?.paints].flat()).forEach(t => {
-        register(map, target.id, t.id);
-      });
-    } else if (isTextStyle(target)) {
-      isDefined(
-        [
-          target.boundVariables?.fontFamily,
-          target.boundVariables?.fontSize,
-          target.boundVariables?.fontStyle,
-          target.boundVariables?.fontWeight,
-          target.boundVariables?.letterSpacing,
-          target.boundVariables?.lineHeight,
-          target.boundVariables?.paragraphIndent,
-          target.boundVariables?.paragraphSpacing,
-        ].flat(),
-      ).forEach(t => {
-        register(map, target.id, t.id);
-      });
+      if (isStyle(target)) return;
+      styleIds.forEach(key => {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+        const result = (target as any)[key];
+        if (!result || typeof result !== 'string' || result === '') return;
+        register(map, target.id, result);
+      })
     }
   });
   return map;
 };
+
+const styleIds = [
+  'backgroundStyleId',
+  'effectStyleId',
+  'fillStyleId',
+  'gridStyleId',
+  'strokeStyleId',
+  'textStyleId',
+] as const satisfies InheritedStyleField[];
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+type StyleIdCheck = IsTrue<Equal<typeof styleIds[number], InheritedStyleField>>;
+
+
+const flatBoundVariables = (target: Target) => {
+  if (!('boundVariables' in target) || !target.boundVariables) return [];
+  return isDefined(Object.entries(target.boundVariables).map(([_, v]) => {
+    if (v instanceof Array) return v;
+    return isAlias(v) ? v : Object.entries(v).map(([_, vv]) => vv)
+  }).flat());
+}
 
 const register = (
   map: TargetMap,
@@ -52,20 +55,13 @@ const register = (
   parentId: Target['id'],
 ) => {
   const parent = map.get(parentId);
-  assertDefined(parent);
   const current = map.get(currentId);
-  assertDefined(current);
+  if (!parent || !current) {
+    console.log(parentId, currentId);
+    return;
+  }
   current.parent.push(parentId);
   parent.children.push(currentId);
 };
 
-const isAlias = (variable: VariableValue) =>
-  typeof variable === 'object' && 'id' in variable;
-const isEffectStyle = (target: Target) =>
-  'type' in target && target.type === 'EFFECT';
-const isGridStyle = (target: Target) =>
-  'type' in target && target.type === 'GRID';
-const isPaintStyle = (target: Target) =>
-  'type' in target && target.type === 'PAINT';
-const isTextStyle = (target: Target) =>
-  'type' in target && target.type === 'TEXT';
+const isAlias = (variable: VariableValue | Record<string, VariableAlias>): variable is VariableAlias => typeof variable === 'object' && 'id' in variable;

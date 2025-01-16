@@ -17,7 +17,7 @@ const reducer = (state: State, action: StoreAction<ActionParams>): State => {
     // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
     case 'update': {
       const rootItems = Object.values(action.map).filter(
-        v => v.parent.length === 0 && v.target.type === 'VARIABLE',
+        v => v.parent.length === 0 && v.target.type !== 'SCENE',
       );
       return {
         ...state,

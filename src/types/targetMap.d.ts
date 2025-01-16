@@ -1,4 +1,4 @@
-type Target = Variable | EffectStyle | GridStyle | PaintStyle | TextStyle;
+type Target = Variable | EffectStyle | GridStyle | PaintStyle | TextStyle | SceneNode;
 
 type TargetMap = Map<Target['id'], TargetTreeItem>;
 
@@ -11,7 +11,7 @@ interface TargetTreeItem {
 interface SerializableTarget {
   id: Target['id'];
   name: Target['name'];
-  type: 'VARIABLE' | Exclude<Target, Variable>['type'];
+  type: 'VARIABLE' | Exclude<Target, Variable>['type'] | 'SCENE';
 }
 
 interface SerializableTargetItem {

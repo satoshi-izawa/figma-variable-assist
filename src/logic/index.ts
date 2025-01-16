@@ -1,4 +1,4 @@
-import { isVariable } from '../util/isVariable';
+import { isSceneNode, isStyle, isVariable } from '../util/nodeTypeGuard';
 import { postLogicMessage } from '../util/postMessage';
 import { createTargetsMap } from './createTargetsMap';
 
@@ -9,6 +9,7 @@ figma.ui.onmessage = (message: UIMessage) => {
     switch (message.type) {
       // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
       case 'refresh': {
+        await figma.loadAllPagesAsync();
         const targets = [
           ...(await Promise.all([
             figma.variables.getLocalVariablesAsync(),
@@ -17,6 +18,7 @@ figma.ui.onmessage = (message: UIMessage) => {
             figma.getLocalPaintStylesAsync(),
             figma.getLocalTextStylesAsync(),
           ])),
+          figma.root.findAll().filter(node => isSceneNode(node)),
         ].flat();
         const tmpMap = [...createTargetsMap(targets).entries()];
         const map: SerializableTargetMap = Object.fromEntries(
@@ -26,7 +28,7 @@ figma.ui.onmessage = (message: UIMessage) => {
               target: {
                 id: item.target.id,
                 name: item.target.name,
-                type: isVariable(item.target) ? 'VARIABLE' : item.target.type,
+                type: isVariable(item.target) ? 'VARIABLE' : isStyle(item.target) ? item.target.type : 'SCENE',
               },
               children: item.children,
               parent: item.parent,
