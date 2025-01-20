@@ -8,16 +8,38 @@ interface TargetTreeItem {
   parent: Target['id'][];
 }
 
-interface SerializableTarget {
-  id: Target['id'];
-  name: Target['name'];
-  type: 'VARIABLE' | Exclude<Target, Variable>['type'] | 'SCENE';
+interface SerializableTargetProperty {
+  COLOR_VARIABLE: {
+    values: VariableValue[];
+  };
+  VARIABLE: {
+    values: VariableValue[];
+  };
+  SCENE: {
+    pageId: Target['id'];
+  };
+  TEXT: object;
+  EFFECT: object;
+  GRID: object;
+  PAINT: object;
 }
 
-interface SerializableTargetItem {
-  target: SerializableTarget;
+interface SerializableTarget<T extends keyof SerializableTargetProperty> {
+  id: Target['id'];
+  name: Target['name'];
+  property: {
+    type: T;
+  } & SerializableTargetProperty[T];
+}
+
+type SerializableTargets = {
+  [P in keyof SerializableTargetProperty]: SerializableTarget<P>;
+}[keyof SerializableTargetProperty];
+
+interface SerializableTargetTreeItem {
+  target: SerializableTargets;
   children: Target['id'][];
   parent: Target['id'][];
 }
 
-type SerializableTargetMap = Record<Target['id'], SerializableTargetItem>;
+type SerializableTargetMap = Record<Target['id'], SerializableTargetTreeItem>;

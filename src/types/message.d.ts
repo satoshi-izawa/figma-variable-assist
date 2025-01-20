@@ -1,10 +1,15 @@
 interface UIMessageParameters {
-  // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-  refresh: {};
+  refresh: object;
+  moveToScene: {
+    pageId: Target['id'];
+    id: Target['id'];
+  }
 }
 
-type UIMessage = {
-  [P in keyof UIMessageParameters]: { type: P } & UIMessageParameters[P];
+type UIMessage<T extends keyof UIMessageParameters> = { type: T } & UIMessageParameters[T];
+
+type UIMessages = {
+  [P in keyof UIMessageParameters]: UIMessage<P>;
 }[keyof UIMessageParameters];
 
 interface LogicMessageParameters {

@@ -1,42 +1,44 @@
-import { isSceneNode, isStyle, isVariable } from '../util/nodeTypeGuard';
+import { assertDefined } from '../util/assertDefined';
+import { isSceneNode } from '../util/nodeTypeGuard';
 import { postLogicMessage } from '../util/postMessage';
+import { convertToSerializable } from './convertToSerializable';
 import { createTargetsMap } from './createTargetsMap';
 
 figma.showUI(__html__);
 
-figma.ui.onmessage = (message: UIMessage) => {
+figma.ui.onmessage = (message: UIMessages) => {
   void (async () => {
     switch (message.type) {
-      // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
-      case 'refresh': {
-        await figma.loadAllPagesAsync();
-        const targets = [
-          ...(await Promise.all([
-            figma.variables.getLocalVariablesAsync(),
-            figma.getLocalEffectStylesAsync(),
-            figma.getLocalGridStylesAsync(),
-            figma.getLocalPaintStylesAsync(),
-            figma.getLocalTextStylesAsync(),
-          ])),
-          figma.root.findAll().filter(node => isSceneNode(node)),
-        ].flat();
-        const tmpMap = [...createTargetsMap(targets).entries()];
-        const map: SerializableTargetMap = Object.fromEntries(
-          tmpMap.map(([id, item]) => [
-            id,
-            {
-              target: {
-                id: item.target.id,
-                name: item.target.name,
-                type: isVariable(item.target) ? 'VARIABLE' : isStyle(item.target) ? item.target.type : 'SCENE',
-              },
-              children: item.children,
-              parent: item.parent,
-            } satisfies SerializableTargetItem,
-          ]),
-        );
-        postLogicMessage({ type: 'createTargetMap', map });
-      }
+      case 'refresh': return refresh(message);
+      case 'moveToScene': return moveToScene(message);
     }
   })();
 };
+
+const refresh = async (_message: UIMessage<'refresh'>) => {
+  await figma.loadAllPagesAsync();
+  const targets = [
+    ...(await Promise.all([
+      figma.variables.getLocalVariablesAsync(),
+      figma.getLocalEffectStylesAsync(),
+      figma.getLocalGridStylesAsync(),
+      figma.getLocalPaintStylesAsync(),
+      figma.getLocalTextStylesAsync(),
+    ])),
+    figma.root.findAll().filter(node => isSceneNode(node)),
+  ].flat();
+  const map = createTargetsMap(targets);
+  postLogicMessage({ type: 'createTargetMap', map: convertToSerializable(map) });
+}
+
+const moveToScene = async (message: UIMessage<'moveToScene'>) => {
+  if (figma.currentPage.id !== message.pageId) {
+    const page = figma.root.findChild(node => node.id === message.pageId);
+    assertDefined(page);
+    await figma.setCurrentPageAsync(page);
+  }
+  const node = figma.currentPage.findOne(({ id }) => id === message.id);
+  assertDefined(node);
+  figma.viewport.scrollAndZoomIntoView([node]);
+  figma.currentPage.selection = [node];
+}

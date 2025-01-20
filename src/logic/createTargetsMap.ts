@@ -10,19 +10,19 @@ export const createTargetsMap = (targets: Target[]) => {
     if (isVariable(target)) {
       [...Object.values(target.valuesByMode)].forEach(t => {
         if (isAlias(t)) {
-          register(map, target.id, t.id);
+          regist(map, target.id, t.id);
         }
       });
     } else {
       flatBoundVariables(target).forEach(t => {
-        register(map, target.id, t.id);
+        regist(map, target.id, t.id);
       });
       if (isStyle(target)) return;
       styleIds.forEach(key => {
         // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
         const result = (target as any)[key];
         if (!result || typeof result !== 'string' || result === '') return;
-        register(map, target.id, result);
+        regist(map, target.id, result);
       })
     }
   });
@@ -49,7 +49,7 @@ const flatBoundVariables = (target: Target) => {
   }).flat());
 }
 
-const register = (
+const regist = (
   map: TargetMap,
   currentId: Target['id'],
   parentId: Target['id'],
@@ -57,7 +57,6 @@ const register = (
   const parent = map.get(parentId);
   const current = map.get(currentId);
   if (!parent || !current) {
-    console.log(parentId, currentId);
     return;
   }
   current.parent.push(parentId);

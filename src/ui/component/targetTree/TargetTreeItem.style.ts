@@ -5,4 +5,7 @@ export const style = {
   children: css({
     marginLeft: '16px',
   }),
+  sceneItem: css({
+    color: 'blue',
+  })
 };
