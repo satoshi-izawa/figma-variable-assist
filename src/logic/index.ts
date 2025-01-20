@@ -4,7 +4,10 @@ import { postLogicMessage } from '../util/postMessage';
 import { convertToSerializable } from './convertToSerializable';
 import { createTargetsMap } from './createTargetsMap';
 
-figma.showUI(__html__);
+figma.showUI(__html__, {
+  width: 400,
+  height: 800,
+});
 
 figma.ui.onmessage = (message: UIMessages) => {
   void (async () => {

@@ -1,4 +1,4 @@
-export const postUIMessage = (message: UIMessage) => {
+export const postUIMessage = (message: UIMessages) => {
   parent.postMessage({ pluginMessage: message }, '*');
 };
 

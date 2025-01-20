@@ -8,14 +8,12 @@ export const TargetTreeComponent = () => {
   return (
     <div>
       {rootItems.map(r => (
-        <>
-          <TargetTreeItemComponent
-            key={r.target.id}
-            item={r}
-            map={map}
-          />
-          <hr />
-        </>
+        <TargetTreeItemComponent
+          isRoot
+          key={r.target.id}
+          item={r}
+          map={map}
+        />
       ))}
     </div>
   );

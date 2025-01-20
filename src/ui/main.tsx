@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useStore } from './hook/useStore.hook';
 import { RefreshButtonComponent, TargetTreeComponent } from './component';
+import { style } from './main.style';
 
 export const Main = () => {
   const { dispatch } = useStore().targetTree;
@@ -22,7 +23,7 @@ export const Main = () => {
     };
   }, [dispatch]);
   return (
-    <div>
+    <div className={style.root}>
       <RefreshButtonComponent />
       <TargetTreeComponent />
     </div>
