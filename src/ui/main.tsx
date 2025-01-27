@@ -13,7 +13,10 @@ export const Main = () => {
       switch (message.type) {
         // eslint-disable-next-line @typescript-eslint/no-unnecessary-condition
         case 'createTargetMap': {
-          dispatch({ type: 'update', map: message.map });
+          dispatch({
+            type: 'update',
+            map: message.map,
+          });
         }
       }
     };

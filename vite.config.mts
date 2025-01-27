@@ -15,8 +15,8 @@ export default defineConfig({
     // eslint-disable-next-line @typescript-eslint/no-unsafe-call
     react({
       plugins: [['@swc/plugin-emotion', {
-        "autoLabel": "always",
-        "labelFormat": "[filename]__[local]"
+        'autoLabel': 'always',
+        'labelFormat': '[filename]__[local]'
       }]]
     }),
   ],

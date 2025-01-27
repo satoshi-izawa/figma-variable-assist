@@ -1,5 +1,9 @@
-import { css } from "@emotion/css";
-import { createLCH, styleConst } from "../../style/styleConst";
+import { css } from '@emotion/css';
+import { createLCH, styleConst } from '../../style/styleConst';
+import { styleMixin } from '../../style/styleMixin';
+
+const { margin } = styleConst;
+const { order } = styleMixin;
 
 const isRootItem = css({
   borderTop: '1px solid black',
@@ -28,7 +32,7 @@ export const style = {
     [`${isRootItem} &`]: {
       fontSize: '16px',
       fontWeight: '600',
-    }
+    },
   }),
   type: css({
     fontSize: '10px',
@@ -36,17 +40,12 @@ export const style = {
   }),
   root: css({}),
   nameRoot: css({
-    display: 'flex',
-    alignItems: 'center',
-    '& > :nth-child(n+2)': {
-      marginLeft: '4px',
-    }
+    ...order.horizontal({ columnGap: margin.small }),
   }),
   nameArea: css({
-    display: 'flex',
-    alignItems: 'baseline',
-    '& > :nth-child(n+2)': {
-      marginLeft: '4px',
-    }
-  })
+    ...order.horizontal({
+      alignItems: 'baseline',
+      columnGap: margin.small,
+    }),
+  }),
 };

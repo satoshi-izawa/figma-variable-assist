@@ -1,10 +1,9 @@
-import { css } from "@emotion/css";
+import { css } from '@emotion/css';
+import { styleMixin } from './style/styleMixin';
 
 /** @package */
 export const style = {
   root: css({
-    '& > :nth-child(n+2)': {
-      marginTop: '8px',
-    }
+    ...styleMixin.order.vertical({}),
   }),
-}
+};

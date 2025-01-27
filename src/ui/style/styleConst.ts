@@ -1,14 +1,14 @@
 const fontSize = {
   // 14px
   normal: '0.875rem',
-}
+};
 const fontWeight = {
   normal: '300',
   bold: '600',
-}
+};
 const lineHeight = {
   normal: '1.5',
-}
+};
 
 export const styleConst = {
   margin: {
@@ -35,10 +35,10 @@ export const styleConst = {
         l: 30,
         c: 120,
         h: 300,
-      }
-    }
-  }
-}
+      },
+    },
+  },
+};
 
-// eslint-disable-next-line @typescript-eslint/restrict-template-expressions
-export const createLCH = ({ l, c, h }: { l: number, c: number, h: number }) => `lch(${l} ${c} ${h})`;
+export const createLCH = ({ l, c, h }: { l: number; c: number; h: number }) =>
+  `lch(${l} ${c} ${h})`;

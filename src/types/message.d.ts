@@ -3,10 +3,12 @@ interface UIMessageParameters {
   moveToScene: {
     pageId: Target['id'];
     id: Target['id'];
-  }
+  };
 }
 
-type UIMessage<T extends keyof UIMessageParameters> = { type: T } & UIMessageParameters[T];
+type UIMessage<T extends keyof UIMessageParameters> = {
+  type: T;
+} & UIMessageParameters[T];
 
 type UIMessages = {
   [P in keyof UIMessageParameters]: UIMessage<P>;

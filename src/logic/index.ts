@@ -12,8 +12,10 @@ figma.showUI(__html__, {
 figma.ui.onmessage = (message: UIMessages) => {
   void (async () => {
     switch (message.type) {
-      case 'refresh': return refresh(message);
-      case 'moveToScene': return moveToScene(message);
+      case 'refresh':
+        return refresh(message);
+      case 'moveToScene':
+        return moveToScene(message);
     }
   })();
 };
@@ -30,8 +32,11 @@ const refresh = async (_message: UIMessage<'refresh'>) => {
     figma.currentPage.findAll().filter(node => isSceneNode(node)),
   ].flat();
   const map = createTargetsMap(targets);
-  postLogicMessage({ type: 'createTargetMap', map: convertToSerializable(map) });
-}
+  postLogicMessage({
+    type: 'createTargetMap',
+    map: convertToSerializable(map),
+  });
+};
 
 const moveToScene = async (message: UIMessage<'moveToScene'>) => {
   if (figma.currentPage.id !== message.pageId) {
@@ -43,4 +48,4 @@ const moveToScene = async (message: UIMessage<'moveToScene'>) => {
   assertDefined(node);
   figma.viewport.scrollAndZoomIntoView([node]);
   figma.currentPage.selection = [node];
-}
+};

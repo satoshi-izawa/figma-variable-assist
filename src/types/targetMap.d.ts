@@ -1,4 +1,10 @@
-type Target = Variable | EffectStyle | GridStyle | PaintStyle | TextStyle | SceneNode;
+type Target =
+  | Variable
+  | EffectStyle
+  | GridStyle
+  | PaintStyle
+  | TextStyle
+  | SceneNode;
 
 type TargetMap = Map<Target['id'], TargetTreeItem>;
 

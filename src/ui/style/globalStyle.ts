@@ -1,5 +1,5 @@
-import { injectGlobal } from "@emotion/css";
-import { createLCH, styleConst } from "./styleConst";
+import { injectGlobal } from '@emotion/css';
+import { createLCH, styleConst } from './styleConst';
 
 /** @private */
 export function resetStyle() {
@@ -29,8 +29,7 @@ export function resetStyle() {
 /** @private */
 export function globalStyle() {
   injectGlobal({
-    '::placeholder': {
-    },
+    '::placeholder': {},
     a: {
       '&:hover': {
         textDecoration: 'underline',

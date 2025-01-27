@@ -9,7 +9,7 @@ import { FlatCompat } from '@eslint/eslintrc';
 import eslint from '@eslint/js';
 import tseslint from 'typescript-eslint';
 // @ts-ignore
-import prettier from "eslint-config-prettier";
+import prettier from 'eslint-config-prettier';
 import react from 'eslint-plugin-react';
 // @ts-ignore
 import reactHooks from 'eslint-plugin-react-hooks';
@@ -24,7 +24,8 @@ export default tseslint.config([
   react.configs.flat.recommended,
   prettier,
   ...compat.extends(
-    'plugin:@figma/figma-plugins/recommended',
+    // ルール側が新しいtypescript-eslintへの参照をしておらず、エラーになるためコメントアウト
+    // 'plugin:@figma/figma-plugins/recommended',
     'plugin:react-hooks/recommended',
   ),
   {
@@ -43,22 +44,27 @@ export default tseslint.config([
         version: 'detect',
       }
     }
-  }, {
+  },
+  {
     rules: {
       ...reactHooks.configs.recommended.rules,
-      "@typescript-eslint/no-unused-vars": [
-        "error",
+      '@typescript-eslint/no-unused-vars': [
+        'error',
         {
-          "argsIgnorePattern": "^_",
-          "varsIgnorePattern": "^_",
-          "caughtErrorsIgnorePattern": "^_",
-          "destructuredArrayIgnorePattern": "^_",
+          'argsIgnorePattern': '^_',
+          'varsIgnorePattern': '^_',
+          'caughtErrorsIgnorePattern': '^_',
+          'destructuredArrayIgnorePattern': '^_',
         }
       ],
-      "react/react-in-jsx-scope": ['off'],
-      "import-access/jsdoc": ["error", {
+      'react/react-in-jsx-scope': ['off'],
+      'import-access/jsdoc': ['error', {
         indexLoophole: true,
       }],
+      '@typescript-eslint/restrict-template-expressions': ['off'],
+      'arrow-parens': ['error', 'as-needed'],
+      'quotes': ['error', 'single'],
+      'object-property-newline': ['error'],
     }
   }
 ]);

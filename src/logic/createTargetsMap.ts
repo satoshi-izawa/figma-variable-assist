@@ -4,7 +4,14 @@ import { isStyle, isVariable } from '../util/nodeTypeGuard';
 /** @package */
 export const createTargetsMap = (targets: Target[]) => {
   const map: TargetMap = new Map(
-    targets.map(t => [t.id, { target: t, children: [], parent: [] }]),
+    targets.map(t => [
+      t.id,
+      {
+        target: t,
+        children: [],
+        parent: [],
+      },
+    ]),
   );
   targets.forEach(target => {
     if (isVariable(target)) {
@@ -23,7 +30,7 @@ export const createTargetsMap = (targets: Target[]) => {
         const result = (target as any)[key];
         if (!result || typeof result !== 'string' || result === '') return;
         regist(map, target.id, result);
-      })
+      });
     }
   });
   return map;
@@ -38,16 +45,21 @@ const styleIds = [
   'textStyleId',
 ] as const satisfies InheritedStyleField[];
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-type StyleIdCheck = IsTrue<Equal<typeof styleIds[number], InheritedStyleField>>;
-
+type StyleIdCheck = IsTrue<
+  Equal<(typeof styleIds)[number], InheritedStyleField>
+>;
 
 const flatBoundVariables = (target: Target) => {
   if (!('boundVariables' in target) || !target.boundVariables) return [];
-  return isDefined(Object.entries(target.boundVariables).map(([_, v]) => {
-    if (v instanceof Array) return v;
-    return isAlias(v) ? v : Object.entries(v).map(([_, vv]) => vv)
-  }).flat());
-}
+  return isDefined(
+    Object.entries(target.boundVariables)
+      .map(([_, v]) => {
+        if (v instanceof Array) return v;
+        return isAlias(v) ? v : Object.entries(v).map(([_, vv]) => vv);
+      })
+      .flat(),
+  );
+};
 
 const regist = (
   map: TargetMap,
@@ -63,4 +75,7 @@ const regist = (
   parent.children.push(currentId);
 };
 
-const isAlias = (variable: VariableValue | Record<string, VariableAlias>): variable is VariableAlias => typeof variable === 'object' && 'id' in variable;
+const isAlias = (
+  variable: VariableValue | Record<string, VariableAlias>,
+): variable is VariableAlias =>
+  typeof variable === 'object' && 'id' in variable;
