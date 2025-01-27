@@ -1,4 +1,5 @@
 import { css } from "@emotion/css";
+import { createLCH, styleConst } from "../../style/styleConst";
 
 const isRootItem = css({
   borderTop: '1px solid black',
@@ -13,7 +14,7 @@ export const style = {
   }),
   isRootItem,
   scene: css({
-    color: 'blue',
+    color: createLCH(styleConst.color.text.link),
     cursor: 'pointer',
   }),
   preview: css({

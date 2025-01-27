@@ -5,6 +5,7 @@
   "main": "code.js",
   "scripts": {
     "build": "rm -rf ./dist && TYPE=ui vite build && TYPE=logic vite build && cp -r ./src/html/ ./dist/html && ts-node tools/replace_html.mts",
+    "publish": "rm -rf publish && npm run build && mkdir -p publish/figma_variable_assist && cp -r dist publish/figma_variable_assist && cp manifest.json publish/figma_variable_assist && cd publish && zip -r figma_variable_assist.zip figma_variable_assist/ && cd ../",
     "format": "eslint --fix src **/*.mts && prettier --w --ignore-path /node_modules src **/*.mts",
     "watch": "npm run build -- --watch"
   },
@@ -14,8 +15,10 @@
     "@eslint/js": "^9.18.0",
     "@figma/eslint-plugin-figma-plugins": "^0.15.0",
     "@figma/plugin-typings": "^1.106.0",
+    "@swc/plugin-emotion": "^8.4.0",
     "@types/react": "^19.0.7",
     "@types/react-dom": "^19.0.3",
+    "@vitejs/plugin-react-swc": "^3.7.2",
     "eslint": "^9.18.0",
     "eslint-config-prettier": "^10.0.1",
     "eslint-plugin-import-access": "^2.2.2",

@@ -19,7 +19,6 @@ figma.ui.onmessage = (message: UIMessages) => {
 };
 
 const refresh = async (_message: UIMessage<'refresh'>) => {
-  await figma.loadAllPagesAsync();
   const targets = [
     ...(await Promise.all([
       figma.variables.getLocalVariablesAsync(),
@@ -28,7 +27,7 @@ const refresh = async (_message: UIMessage<'refresh'>) => {
       figma.getLocalPaintStylesAsync(),
       figma.getLocalTextStylesAsync(),
     ])),
-    figma.root.findAll().filter(node => isSceneNode(node)),
+    figma.currentPage.findAll().filter(node => isSceneNode(node)),
   ].flat();
   const map = createTargetsMap(targets);
   postLogicMessage({ type: 'createTargetMap', map: convertToSerializable(map) });
