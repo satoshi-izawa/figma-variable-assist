@@ -18,23 +18,29 @@ interface TargetTreeItem {
   styleReference: Map<string, Set<Target['id']>>;
 }
 
-type SerializableValue = {
-  type: 'ALIAS';
-  name: Target['name'];
-  reference: SerializableValue;
-} | {
-  type: 'COLOR';
-  hex: string;
-} | {
-  type: 'STRING';
-  value: string;
-} | {
-  type: 'NUMBER';
-  value: number;
-} | {
-  type: 'BOOLEAN';
-  value: boolean;
-} | null;
+type SerializableValue =
+  | {
+      type: 'ALIAS';
+      name: Target['name'];
+      reference: SerializableValue;
+    }
+  | {
+      type: 'COLOR';
+      hex: string;
+    }
+  | {
+      type: 'STRING';
+      value: string;
+    }
+  | {
+      type: 'NUMBER';
+      value: number;
+    }
+  | {
+      type: 'BOOLEAN';
+      value: boolean;
+    }
+  | null;
 
 interface SerializableTargetProperty {
   VARIABLE: {

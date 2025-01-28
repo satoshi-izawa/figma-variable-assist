@@ -6,11 +6,10 @@ export const isVariableAlias = (
 ): variable is VariableAlias =>
   typeof variable === 'object' && 'id' in variable;
 
-
 export const isStyle: (
   target: Target,
 ) => target is EffectStyle | GridStyle | PaintStyle | TextStyle = target =>
-    'getStyleConsumersAsync' in target;
+  'getStyleConsumersAsync' in target;
 
 export const isSceneNode = (node: PageNode | SceneNode): node is SceneNode =>
   !('selection' in node);

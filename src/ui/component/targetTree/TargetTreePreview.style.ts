@@ -14,6 +14,6 @@ export const style = {
     border: border.gray,
   }),
   root: css({
-    ...order.horizontal({ columnGap: margin.small })
-  })
-}
+    ...order.horizontal({ columnGap: margin.small }),
+  }),
+};

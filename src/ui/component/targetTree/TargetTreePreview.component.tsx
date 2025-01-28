@@ -1,7 +1,7 @@
 import { style } from './TargetTreePreview.style';
 
 interface Props {
-  isPreviewOnly?: boolean
+  isPreviewOnly?: boolean;
   value: SerializableValue;
 }
 

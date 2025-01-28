@@ -79,10 +79,10 @@ const useCreateNameArea = (
     });
   }, [property, id]);
   return (
-    <div
-      className={style.nameRoot}
-    >
-      <div className={style.nameArea} onClick={onClick}>
+    <div className={style.nameRoot}>
+      <div
+        className={style.nameArea}
+        onClick={onClick}>
         <span
           className={[
             style.name(!!isRoot),
@@ -92,7 +92,13 @@ const useCreateNameArea = (
         </span>
         <span className={style.type}>{usedType}</span>
       </div>
-      {property.type === 'VARIABLE' || property.type === 'PAINT' ? <PreviewComponent value={property.values[0]} isPreviewOnly /> : null}
+      {(property.type === 'VARIABLE' || property.type === 'PAINT') &&
+      property.values[0]?.type !== 'ALIAS' ? (
+        <PreviewComponent
+          value={property.values[0]}
+          isPreviewOnly
+        />
+      ) : null}
       {item.used.length > 0 ? (
         <BadgeComponent count={item.used.length} />
       ) : null}

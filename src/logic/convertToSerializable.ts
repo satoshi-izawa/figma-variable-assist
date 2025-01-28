@@ -1,6 +1,11 @@
 import { assertDefined } from '../util/assertDefined';
 import { isDefined } from '../util/isDefined';
-import { isPageNode, isStyle, isVariable, isVariableAlias } from '../util/nodeTypeGuard';
+import {
+  isPageNode,
+  isStyle,
+  isVariable,
+  isVariableAlias,
+} from '../util/nodeTypeGuard';
 
 /** @package */
 export const convertToSerializable = (
@@ -33,7 +38,9 @@ const createTypeAndProperty = (
   if (isVariable(target)) {
     return {
       type: 'VARIABLE',
-      values: Object.values(target.valuesByMode).map(v => convertToSerializableValue(map, target, v)),
+      values: Object.values(target.valuesByMode).map(v =>
+        convertToSerializableValue(map, target, v),
+      ),
     };
   } else if (isStyle(target)) {
     switch (target.type) {
@@ -44,8 +51,9 @@ const createTypeAndProperty = (
       case 'PAINT':
         return {
           type: 'PAINT',
-          values: (
-            target.boundVariables?.paints ? target.boundVariables.paints : isDefined(target.paints.map(p => 'color' in p ? p.color : null))
+          values: (target.boundVariables?.paints
+            ? target.boundVariables.paints
+            : isDefined(target.paints.map(p => ('color' in p ? p.color : null)))
           ).map(v => convertToSerializableValue(map, target, v)),
         };
       case 'TEXT':
@@ -61,51 +69,91 @@ const createTypeAndProperty = (
 const convertToSerializableValue = (
   map: TargetMap,
   target: Target,
-  value: VariableValue
+  value: VariableValue,
 ): SerializableValue => {
   if (isVariable(target)) {
-    if (isVariableAlias(value)) {
-      let parent = map.get(value.id);
-      assertDefined(parent);
-      while (parent.parent.length !== 0) {
-        parent = map.get(parent.parent[0][1])
-        assertDefined(parent);
-      }
-      return {
-        type: 'ALIAS',
-        name: parent.target.name,
-        reference: isVariable(parent.target) ? convertToSerializableValue(map, parent.target, [...Object.values(parent.target.valuesByMode)][0]) : null,
-      }
-    }
+    if (isVariableAlias(value)) return createAliasValue(map, value);
     switch (target.resolvedType) {
-      case 'COLOR': return isColor(value) ? {
-        type: 'COLOR',
-        hex: rgbToHex(value),
-      } : null;
-      case 'BOOLEAN': return typeof value === 'boolean' ? {
-        type: 'BOOLEAN',
-        value,
-      } : null;
-      case 'FLOAT': return typeof value === 'number' ? {
-        type: 'NUMBER',
-        value,
-      } : null
-      case 'STRING': return typeof value === 'string' ? {
-        type: 'STRING',
-        value,
-      } : null;
+      case 'COLOR':
+        return isColor(value)
+          ? {
+              type: 'COLOR',
+              hex: rgbToHex(value),
+            }
+          : null;
+      case 'BOOLEAN':
+        return typeof value === 'boolean'
+          ? {
+              type: 'BOOLEAN',
+              value,
+            }
+          : null;
+      case 'FLOAT':
+        return typeof value === 'number'
+          ? {
+              type: 'NUMBER',
+              value,
+            }
+          : null;
+      case 'STRING':
+        return typeof value === 'string'
+          ? {
+              type: 'STRING',
+              value,
+            }
+          : null;
+    }
+  }
+  if (isStyle(target)) {
+    switch (target.type) {
+      case 'PAINT': {
+        return isColor(value)
+          ? {
+              type: 'COLOR',
+              hex: rgbToHex(value),
+            }
+          : isVariableAlias(value)
+            ? createAliasValue(map, value)
+            : null;
+      }
     }
   }
   return null;
-}
+};
+
+const createAliasValue = (
+  map: TargetMap,
+  value: VariableAlias,
+): SerializableValue => {
+  let parent = map.get(value.id);
+  assertDefined(parent);
+  while (parent.parent.length !== 0) {
+    parent = map.get(parent.parent[0][1]);
+    assertDefined(parent);
+  }
+  return {
+    type: 'ALIAS',
+    name: parent.target.name,
+    reference: isVariable(parent.target)
+      ? convertToSerializableValue(
+          map,
+          parent.target,
+          [...Object.values(parent.target.valuesByMode)][0],
+        )
+      : null,
+  };
+};
 
 const isColor = (value: VariableValue) =>
   typeof value === 'object' && 'r' in value && 'g' in value && 'b' in value;
 
 const rgbToHex = (value: RGB | RGBA) => {
   return `#${toHex(value.r)}${toHex(value.g)}${toHex(value.b)}${'a' in value && value.a !== 1 ? toHex(value.a) : ''}`;
-}
-const toHex = (value: number) => Math.round(value * 255).toString(16).padStart(2, '0');
+};
+const toHex = (value: number) =>
+  Math.round(value * 255)
+    .toString(16)
+    .padStart(2, '0');
 
 const findPageId = (target: SceneNode) => {
   let current: BaseNode | null = target;

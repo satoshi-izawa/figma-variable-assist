@@ -21,37 +21,60 @@ export const TargetTreeDetailInfoComponent = (props: Props) => {
   );
 };
 
-const createRow = (key: string, label: string, value: string | JSX.Element | null) => value !== null ? (
-  <div className={style.row} key={key}>
-    <span className={style.label}>{label}</span>
-    <span>{value}</span>
-  </div>
-) : null;
+const createRow = (
+  key: string,
+  label: string,
+  value: string | JSX.Element | null,
+) =>
+  value !== null ? (
+    <div
+      className={style.row}
+      key={key}>
+      <span className={style.label}>{label}</span>
+      <span>{value}</span>
+    </div>
+  ) : null;
 
 const createTypePropetyArea = ({ item }: Props) => {
   const { property } = item.target;
   switch (property.type) {
     case 'VARIABLE': {
-      return <div>{property.values.map((v, i) => createRow(`${i}`, `値${i + 1}`, toDisplayElement(v)))}</div>;
+      return (
+        <div>
+          {property.values.map((v, i) =>
+            createRow(`${i}`, `値${i + 1}`, toDisplayElement(v)),
+          )}
+        </div>
+      );
     }
     case 'PAINT': {
-      return <div>{property.values.map((v, i) => createRow(`${i}`, `値${i + 1}`, toDisplayElement(v)))}</div>;
+      return (
+        <div>
+          {property.values.map((v, i) =>
+            createRow(`${i}`, `値${i + 1}`, toDisplayElement(v)),
+          )}
+        </div>
+      );
     }
   }
   return null;
-}
+};
 
 const toDisplayElement = (v: SerializableValue) => {
   switch (v?.type) {
-    case 'ALIAS': return toDisplayElement(v.reference);
-    case 'COLOR': return <PreviewComponent value={v} />;
-    case 'BOOLEAN': return `${v.value}`;
-    case 'NUMBER': return `${v.value}`;
-    case 'STRING': return v.value;
+    case 'ALIAS':
+      return toDisplayElement(v.reference);
+    case 'COLOR':
+      return <PreviewComponent value={v} />;
+    case 'BOOLEAN':
+      return `${v.value}`;
+    case 'NUMBER':
+      return `${v.value}`;
+    case 'STRING':
+      return v.value;
   }
   return null;
-}
-
+};
 
 const createUsedArea = ({ item, map }: Props) => (
   <TargetTreeItemChildrenComponent
