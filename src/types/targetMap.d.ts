@@ -8,18 +8,37 @@ type Target =
 
 type TargetMap = Map<Target['id'], TargetTreeItem>;
 
+type ParentOrChild = [string, Target['id']];
+
 interface TargetTreeItem {
   target: Target;
-  children: Target['id'][];
-  parent: Target['id'][];
+  children: ParentOrChild[];
+  parent: ParentOrChild[];
+  used: ParentOrChild[];
+  styleReference: Map<string, Set<Target['id']>>;
 }
 
+type SerializableValue = {
+  type: 'ALIAS';
+  name: Target['name'];
+  reference: SerializableValue;
+} | {
+  type: 'COLOR';
+  hex: string;
+} | {
+  type: 'STRING';
+  value: string;
+} | {
+  type: 'NUMBER';
+  value: number;
+} | {
+  type: 'BOOLEAN';
+  value: boolean;
+} | null;
+
 interface SerializableTargetProperty {
-  COLOR_VARIABLE: {
-    values: VariableValue[];
-  };
   VARIABLE: {
-    values: VariableValue[];
+    values: SerializableValue[];
   };
   SCENE: {
     pageId: Target['id'];
@@ -27,7 +46,9 @@ interface SerializableTargetProperty {
   TEXT: object;
   EFFECT: object;
   GRID: object;
-  PAINT: object;
+  PAINT: {
+    values: SerializableValue[];
+  };
 }
 
 interface SerializableTarget<T extends keyof SerializableTargetProperty> {
@@ -44,8 +65,9 @@ type SerializableTargets = {
 
 interface SerializableTargetTreeItem {
   target: SerializableTargets;
-  children: Target['id'][];
-  parent: Target['id'][];
+  children: ParentOrChild[];
+  parent: ParentOrChild[];
+  used: ParentOrChild[];
 }
 
 type SerializableTargetMap = Record<Target['id'], SerializableTargetTreeItem>;

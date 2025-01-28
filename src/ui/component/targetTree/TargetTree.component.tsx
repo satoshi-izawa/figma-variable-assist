@@ -10,6 +10,7 @@ export const TargetTreeComponent = () => {
       {rootItems.map(r => (
         <TargetTreeItemComponent
           isRoot
+          usedType={null}
           key={r.target.id}
           item={r}
           map={map}

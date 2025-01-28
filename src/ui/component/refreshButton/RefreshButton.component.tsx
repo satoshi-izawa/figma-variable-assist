@@ -1,16 +1,19 @@
-import { useEffect, useRef } from 'react';
-import { assertDefined } from '../../../util/assertDefined';
+import { useCallback, useEffect } from 'react';
 import { postUIMessage } from '../../../util/postMessage';
+import { ButtonComponent } from '../button';
 
 /** @package */
 export const RefreshButtonComponent = () => {
-  const ref = useRef<HTMLButtonElement>(null);
-  useEffect(() => {
-    assertDefined(ref.current);
+  const onClick = useCallback(() => {
     postUIMessage({ type: 'refresh' });
-    ref.current.addEventListener('click', () => {
-      postUIMessage({ type: 'refresh' });
-    });
   }, []);
-  return <button ref={ref}>再読み込み</button>;
+  useEffect(() => {
+    onClick();
+  }, [onClick]);
+  return (
+    <ButtonComponent
+      onClick={onClick}
+      label='再読み込み'
+    />
+  );
 };

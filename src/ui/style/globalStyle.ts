@@ -1,5 +1,8 @@
 import { injectGlobal } from '@emotion/css';
-import { createLCH, styleConst } from './styleConst';
+// eslint-disable-next-line import-access/jsdoc
+import { createLCH, rootFont, styleConst } from './styleConst';
+
+const { color, font } = styleConst;
 
 /** @private */
 export function resetStyle() {
@@ -34,14 +37,16 @@ export function globalStyle() {
       '&:hover': {
         textDecoration: 'underline',
       },
-
-      color: createLCH(styleConst.color.text.link),
+      color: createLCH(color.text.link),
       cursor: 'pointer',
     },
+    html: {
+      font: rootFont,
+    },
     body: {
-      fontFamily: styleConst.fontFamily,
-      font: styleConst.font.normal.normal,
-      color: createLCH(styleConst.color.text.normal),
+      backgroundColor: createLCH(color.fill.body),
+      font: font.normal.normal,
+      color: createLCH(color.text.normal),
       overflowWrap: 'anywhere',
       padding: '0',
     },

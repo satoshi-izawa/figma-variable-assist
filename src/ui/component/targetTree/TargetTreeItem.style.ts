@@ -2,45 +2,39 @@ import { css } from '@emotion/css';
 import { createLCH, styleConst } from '../../style/styleConst';
 import { styleMixin } from '../../style/styleMixin';
 
-const { margin } = styleConst;
+const { margin, border, font, color } = styleConst;
 const { order } = styleMixin;
-
-const isRootItem = css({
-  borderTop: '1px solid black',
-  padding: '4px',
-});
 
 /** @package */
 export const style = {
-  children: css({
-    padding: '4px',
-    marginLeft: '2em',
+  usedCount: css({
+    font: font.minimum.normal,
+    color: createLCH(color.text.description),
   }),
-  isRootItem,
+  isRootItem: css({
+    borderTop: border.gray,
+    padding: margin.small,
+  }),
   scene: css({
     color: createLCH(styleConst.color.text.link),
     cursor: 'pointer',
   }),
-  preview: css({
-    marginLeft: '2px',
-    width: '16px',
-    height: '16px',
-    borderRadius: '2px',
-    border: '1px solid black',
-  }),
-  name: css({
-    [`${isRootItem} &`]: {
-      fontSize: '16px',
-      fontWeight: '600',
-    },
-  }),
+  name: (isRoot: boolean) =>
+    css({
+      font: isRoot ? font.large.bold : font.normal.normal,
+    }),
   type: css({
-    fontSize: '10px',
-    color: 'gray',
+    font: font.minimum.normal,
+    color: createLCH(color.text.description),
   }),
-  root: css({}),
+  root: css({
+    ...order.vertical({ margin: margin.minimum }),
+  }),
   nameRoot: css({
     ...order.horizontal({ columnGap: margin.small }),
+  }),
+  children: css({
+    marginLeft: margin.indent,
   }),
   nameArea: css({
     ...order.horizontal({

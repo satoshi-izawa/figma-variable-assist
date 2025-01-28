@@ -1,5 +1,5 @@
 import { isDefined } from '../util/isDefined';
-import { isStyle, isVariable } from '../util/nodeTypeGuard';
+import { isStyle, isVariable, isVariableAlias } from '../util/nodeTypeGuard';
 
 /** @package */
 export const createTargetsMap = (targets: Target[]) => {
@@ -10,26 +10,30 @@ export const createTargetsMap = (targets: Target[]) => {
         target: t,
         children: [],
         parent: [],
+        used: [],
+        styleReference: new Map(),
       },
     ]),
   );
   targets.forEach(target => {
     if (isVariable(target)) {
       [...Object.values(target.valuesByMode)].forEach(t => {
-        if (isAlias(t)) {
-          regist(map, target.id, t.id);
+        if (isVariableAlias(t)) {
+          regist(map, target.id, t.id, 'variable');
         }
       });
     } else {
-      flatBoundVariables(target).forEach(t => {
-        regist(map, target.id, t.id);
-      });
-      if (isStyle(target)) return;
-      styleIds.forEach(key => {
-        // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
-        const result = (target as any)[key];
-        if (!result || typeof result !== 'string' || result === '') return;
-        regist(map, target.id, result);
+      const isScene = !isStyle(target);
+      if (isScene) {
+        styleIds.forEach(key => {
+          // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
+          const result = (target as any)[key];
+          if (!result || typeof result !== 'string' || result === '') return;
+          regist(map, target.id, result, key, isScene);
+        });
+      }
+      flatBoundVariables(target).forEach(([k, t]) => {
+        regist(map, target.id, t.id, k, isScene);
       });
     }
   });
@@ -53,9 +57,11 @@ const flatBoundVariables = (target: Target) => {
   if (!('boundVariables' in target) || !target.boundVariables) return [];
   return isDefined(
     Object.entries(target.boundVariables)
-      .map(([_, v]) => {
-        if (v instanceof Array) return v;
-        return isAlias(v) ? v : Object.entries(v).map(([_, vv]) => vv);
+      .map(([k, v]) => {
+        if (v instanceof Array) return v.map(vv => [k, vv] as const);
+        return isVariableAlias(v)
+          ? [[k, v] as const]
+          : Object.entries(v).map(([kk, vv]) => [`${k}/${kk}`, vv] as const);
       })
       .flat(),
   );
@@ -65,17 +71,30 @@ const regist = (
   map: TargetMap,
   currentId: Target['id'],
   parentId: Target['id'],
+  key: string,
+  isScene = false,
 ) => {
   const parent = map.get(parentId);
   const current = map.get(currentId);
   if (!parent || !current) {
     return;
   }
-  current.parent.push(parentId);
-  parent.children.push(currentId);
+  if (isStyle(parent.target)) {
+    current.styleReference.set(key, new Set(parent.parent.map(p => p[1])));
+  }
+  // 変数とスタイル両方で重複登録されるのを防ぐ
+  if (isScene && isDuplicate(key, current, parentId)) return;
+  current.parent.push([key, parentId]);
+  (isScene ? parent.used : parent.children).push([key, currentId]);
 };
 
-const isAlias = (
-  variable: VariableValue | Record<string, VariableAlias>,
-): variable is VariableAlias =>
-  typeof variable === 'object' && 'id' in variable;
+const isDuplicate = (
+  key: string,
+  current: TargetTreeItem,
+  parentId: Target['id'],
+) => {
+  switch (key) {
+    case 'fills':
+      return !!current.styleReference.get('fillStyleId')?.has(parentId);
+  }
+};
