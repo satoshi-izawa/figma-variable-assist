@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useMemo, useState } from 'react';
 import { style } from './TargetTreeItem.style';
 import { postUIMessage } from '../../../util/postMessage';
 import { OpenButtonComponent } from '../button';
@@ -6,6 +6,11 @@ import { TargetTreeDetailInfoComponent } from './TargetTreeDetailInfo.component'
 import { TargetTreeItemChildrenComponent } from './TargetTreeItemChildren.component';
 import { BadgeComponent } from '../badge';
 import { PreviewComponent } from './TargetTreePreview.component';
+import {
+  isSceneItem,
+  isStyleItem,
+  isVariableItem,
+} from '../../../util/nodeTypeGuard';
 
 interface Props {
   map: SerializableTargetMap;
@@ -17,14 +22,14 @@ interface Props {
 /** @package */
 export const TargetTreeItemComponent = (props: Props) => {
   const { item, map, isRoot, usedType } = props;
-  const [variables, styles] = separeteVariablesAndStyles(props);
+  const [variables, styles, scenes] = useSepareteTargets(props);
   const [isOpen, openDispatch] = useState(false);
   const onClickOpen = useCallback(() => {
     openDispatch(!isOpen);
   }, [isOpen, openDispatch]);
   return (
     <div className={[style.root, isRoot ? style.isRootItem : ''].join(' ')}>
-      {useCreateNameArea(props, isOpen, onClickOpen)}
+      {useCreateNameArea(props, isOpen, onClickOpen, scenes)}
       {isOpen ? (
         <TargetTreeDetailInfoComponent
           item={item}
@@ -50,23 +55,20 @@ export const TargetTreeItemComponent = (props: Props) => {
   );
 };
 
-const separeteVariablesAndStyles = (props: Props) => {
-  const { item } = props;
-  const variables = item.children.filter(c => isVariable(c, props));
-  const styles = item.children.filter(c => !isVariable(c, props));
-  return [variables, styles];
-};
-
-const isVariable = (c: ParentOrChild, { map }: Props) => {
-  const child = map[c[1]];
-  const { type } = child.target.property;
-  return type === 'VARIABLE';
+const useSepareteTargets = ({ item, map }: Props) => {
+  return useMemo(() => {
+    const variables = item.children.filter(c => isVariableItem(map[c[1]]));
+    const styles = item.children.filter(c => isStyleItem(map[c[1]]));
+    const scenes = item.children.filter(c => isSceneItem(map[c[1]]));
+    return [variables, styles, scenes];
+  }, [item, map]);
 };
 
 const useCreateNameArea = (
   props: Props,
   isOpen: boolean,
   onClickOpen: () => unknown,
+  scenes: ParentOrChild[],
 ) => {
   const { item, usedType, isRoot } = props;
   const { property, name, id } = item.target;
@@ -99,9 +101,7 @@ const useCreateNameArea = (
           isPreviewOnly
         />
       ) : null}
-      {item.used.length > 0 ? (
-        <BadgeComponent count={item.used.length} />
-      ) : null}
+      {scenes.length > 0 ? <BadgeComponent count={scenes.length} /> : null}
       <OpenButtonComponent
         isOpen={isOpen}
         onClick={onClickOpen}

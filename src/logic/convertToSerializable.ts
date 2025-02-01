@@ -2,7 +2,7 @@ import { assertDefined } from '../util/assertDefined';
 import { isDefined } from '../util/isDefined';
 import {
   isPageNode,
-  isStyle,
+  isStyleNode,
   isVariable,
   isVariableAlias,
 } from '../util/nodeTypeGuard';
@@ -19,7 +19,6 @@ export const convertToSerializable = (
         {
           children: item.children,
           parent: item.parent,
-          used: item.used,
           target: {
             id,
             name: target.name,
@@ -42,7 +41,7 @@ const createTypeAndProperty = (
         convertToSerializableValue(map, target, v),
       ),
     };
-  } else if (isStyle(target)) {
+  } else if (isStyleNode(target)) {
     switch (target.type) {
       case 'EFFECT':
         return { type: 'EFFECT' };
@@ -104,7 +103,7 @@ const convertToSerializableValue = (
           : null;
     }
   }
-  if (isStyle(target)) {
+  if (isStyleNode(target)) {
     switch (target.type) {
       case 'PAINT': {
         return isColor(value)

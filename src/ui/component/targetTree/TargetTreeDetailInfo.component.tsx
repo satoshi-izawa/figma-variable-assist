@@ -1,7 +1,8 @@
-import { JSX } from 'react';
+import { JSX, useMemo } from 'react';
 import { style } from './TargetTreeDetailInfo.style';
 import { TargetTreeItemChildrenComponent } from './TargetTreeItemChildren.component';
 import { PreviewComponent } from './TargetTreePreview.component';
+import { isSceneItem } from '../../../util/nodeTypeGuard';
 
 interface Props {
   map: SerializableTargetMap;
@@ -16,7 +17,7 @@ export const TargetTreeDetailInfoComponent = (props: Props) => {
     <div className={style.root}>
       {createRow('type', '種別', item.target.property.type)}
       {createTypePropetyArea(props)}
-      {createUsedArea(props)}
+      {useCreateUsedArea(props)}
     </div>
   );
 };
@@ -63,23 +64,33 @@ const createTypePropetyArea = ({ item }: Props) => {
 const toDisplayElement = (v: SerializableValue) => {
   switch (v?.type) {
     case 'ALIAS':
-      return toDisplayElement(v.reference);
+      return (
+        <div className={style.alias}>
+          <span>参照: {v.name}</span>（{toDisplayElement(v.reference)}）
+        </div>
+      );
     case 'COLOR':
       return <PreviewComponent value={v} />;
     case 'BOOLEAN':
-      return `${v.value}`;
+      return <div>{v.value}</div>;
     case 'NUMBER':
-      return `${v.value}`;
+      return <div>{v.value}</div>;
     case 'STRING':
-      return v.value;
+      return <div>{v.value}</div>;
   }
   return null;
 };
 
-const createUsedArea = ({ item, map }: Props) => (
-  <TargetTreeItemChildrenComponent
-    array={item.used}
-    label='利用箇所'
-    map={map}
-  />
-);
+const useCreateUsedArea = ({ item, map }: Props) => {
+  const used = useMemo(
+    () => item.children.filter(c => isSceneItem(map[c[1]])),
+    [item, map],
+  );
+  return (
+    <TargetTreeItemChildrenComponent
+      array={used}
+      label='利用箇所'
+      map={map}
+    />
+  );
+};

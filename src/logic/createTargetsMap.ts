@@ -1,5 +1,9 @@
 import { isDefined } from '../util/isDefined';
-import { isStyle, isVariable, isVariableAlias } from '../util/nodeTypeGuard';
+import {
+  isStyleNode,
+  isVariable,
+  isVariableAlias,
+} from '../util/nodeTypeGuard';
 
 /** @package */
 export const createTargetsMap = (targets: Target[]) => {
@@ -23,7 +27,7 @@ export const createTargetsMap = (targets: Target[]) => {
         }
       });
     } else {
-      const isScene = !isStyle(target);
+      const isScene = !isStyleNode(target);
       if (isScene) {
         styleIds.forEach(key => {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any, @typescript-eslint/no-unsafe-member-access, @typescript-eslint/no-unsafe-assignment
@@ -79,13 +83,13 @@ const regist = (
   if (!parent || !current) {
     return;
   }
-  if (isStyle(parent.target)) {
+  if (isStyleNode(parent.target)) {
     current.styleReference.set(key, new Set(parent.parent.map(p => p[1])));
   }
   // 変数とスタイル両方で重複登録されるのを防ぐ
   if (isScene && isDuplicate(key, current, parentId)) return;
   current.parent.push([key, parentId]);
-  (isScene ? parent.used : parent.children).push([key, currentId]);
+  parent.children.push([key, currentId]);
 };
 
 const isDuplicate = (

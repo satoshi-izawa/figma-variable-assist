@@ -32,7 +32,6 @@ const refresh = async (_message: UIMessage<'refresh'>) => {
     figma.currentPage.findAll().filter(node => isSceneNode(node)),
   ].flat();
   const map = createTargetsMap(targets);
-  console.log(convertToSerializable(map));
   postLogicMessage({
     type: 'createTargetMap',
     map: convertToSerializable(map),

@@ -7,6 +7,9 @@ const { order } = styleMixin;
 
 /** @package */
 export const style = {
+  alias: css({
+    display: 'flex',
+  }),
   root: css({
     padding: margin.small,
     borderRadius: borderRadius.normal,

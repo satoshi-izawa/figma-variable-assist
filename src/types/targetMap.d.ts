@@ -14,7 +14,6 @@ interface TargetTreeItem {
   target: Target;
   children: ParentOrChild[];
   parent: ParentOrChild[];
-  used: ParentOrChild[];
   styleReference: Map<string, Set<Target['id']>>;
 }
 
@@ -73,7 +72,6 @@ interface SerializableTargetTreeItem {
   target: SerializableTargets;
   children: ParentOrChild[];
   parent: ParentOrChild[];
-  used: ParentOrChild[];
 }
 
 type SerializableTargetMap = Record<Target['id'], SerializableTargetTreeItem>;
